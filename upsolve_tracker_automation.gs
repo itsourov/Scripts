@@ -13,10 +13,10 @@ const ATCODER_ROW = 5;
 
 
 
-function updateAllCFData() {
+function updateAllCFData(currentRow) {
   var sheet = SpreadsheetApp.getActive().getActiveSheet();
 
-  for (var i = CONTEST_ROW; i <= sheet.getLastRow(); i += 1) {
+  for (var i = currentRow ?? CONTEST_ROW; i <= currentRow ?? sheet.getLastRow(); i += 1) {
     var contest = sheet.getRange(i, CONTEST_COLUMN);
 
     var url = contest.getRichTextValue().getLinkUrl();
@@ -100,10 +100,10 @@ function updateAllCFData() {
 
 
 
-function updateAllAtcoderData() {
+function updateAllAtcoderData(currentRow) {
   var sheet = SpreadsheetApp.getActive().getActiveSheet();
 
-  for (var i = CONTEST_ROW; i <= sheet.getLastRow(); i += 1) {
+  for (var i = currentRow ?? CONTEST_ROW; i <= currentRow ?? sheet.getLastRow(); i += 1) {
     var contest = sheet.getRange(i, CONTEST_COLUMN);
     if (contest.getValue() == false) break;
 
@@ -193,7 +193,7 @@ function updateAllAtcoderData() {
 
 
 
-function updateAllVjudgeData() {
+function updateAllVjudgeData(currentRow) {
   var sheet = SpreadsheetApp.getActive().getActiveSheet();
 
   var userColumnIndexMap = {};
@@ -206,7 +206,7 @@ function updateAllVjudgeData() {
   }
 
   var col = CONTEST_COLUMN;
-  for (var r = CONTEST_ROW; r <= sheet.getLastRow(); r++) {
+  for (var r = currentRow ?? CONTEST_ROW; r <= currentRow ?? sheet.getLastRow(); r++) {
     var row = r;
 
     var cell = sheet.getRange(row, col);
@@ -302,8 +302,8 @@ function vjudgeDataProcess(contestId) {
 
 function getVjudgeData(contestId) {
   var formData = {
-    'username': '', //use your vjudge account
-    'password': ''
+    'username': '***',
+    'password': '***'
   };
   var options = {
     'method': 'post',
@@ -353,9 +353,33 @@ function updateAll() {
   updateAllVjudgeData();
 }
 
+function updateCurrent() {
+  var sheet = SpreadsheetApp.getActive().getActiveSheet();
+  var cell = sheet.getCurrentCell();
+
+  var url = cell.getRichTextValue().getLinkUrl();
+  if (!url) {
+    SpreadsheetApp.getUi().alert('Error! No link of profile or contest!');
+    return;
+  }
+
+  var platform = url.split('/')[2];
+  if (platform === "vjudge.net") {
+    updateAllVjudgeData(cell.getRowIndex());
+  } else if (platform === 'codeforces.com') {
+    updateAllCFData(cell.getRowIndex());
+  } else if (platform === "atcoder.jp") {
+    updateAllAtcoderData(cell.getRowIndex());
+  } else {
+    SpreadsheetApp.getUi().alert('No contest link was found!');
+    return;
+  }
+}
+
 function onOpen() {
   var ui = SpreadsheetApp.getUi();
   ui.createMenu('Update Count')
+    .addItem('Update Chosen Contest', 'updateCurrent')
     .addItem('Update All', 'updateAll')
     .addItem('Update all Atcoder', 'updateAllAtcoderData')
     .addItem('Update all Codeforces', 'updateAllCFData')
