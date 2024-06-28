@@ -16,7 +16,7 @@ const ATCODER_ROW = 5;
 function updateAllCFData(currentRow) {
   var sheet = SpreadsheetApp.getActive().getActiveSheet();
 
-  for (var i = currentRow ?? CONTEST_ROW; i <= currentRow ?? sheet.getLastRow(); i += 1) {
+  for (var i = (currentRow ?? CONTEST_ROW); i <= (currentRow ?? sheet.getLastRow()); i += 1) {
     var contest = sheet.getRange(i, CONTEST_COLUMN);
 
     var url = contest.getRichTextValue().getLinkUrl();
@@ -103,7 +103,7 @@ function updateAllCFData(currentRow) {
 function updateAllAtcoderData(currentRow) {
   var sheet = SpreadsheetApp.getActive().getActiveSheet();
 
-  for (var i = currentRow ?? CONTEST_ROW; i <= currentRow ?? sheet.getLastRow(); i += 1) {
+  for (var i = (currentRow ?? CONTEST_ROW); i <= (currentRow ?? sheet.getLastRow()); i += 1) {
     var contest = sheet.getRange(i, CONTEST_COLUMN);
     if (contest.getValue() == false) break;
 
@@ -206,7 +206,7 @@ function updateAllVjudgeData(currentRow) {
   }
 
   var col = CONTEST_COLUMN;
-  for (var r = currentRow ?? CONTEST_ROW; r <= currentRow ?? sheet.getLastRow(); r++) {
+  for (var r = (currentRow ?? CONTEST_ROW); r <= (currentRow ?? sheet.getLastRow()); r++) {
     var row = r;
 
     var cell = sheet.getRange(row, col);
@@ -348,9 +348,9 @@ function problemIndexGenerate() {
 
 
 function updateAll() {
+  updateAllVjudgeData();
   updateAllCFData();
   updateAllAtcoderData();
-  updateAllVjudgeData();
 }
 
 function updateCurrent() {
